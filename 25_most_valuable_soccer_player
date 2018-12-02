@@ -1,0 +1,23 @@
+import requests
+import csv
+from bs4 import BeautifulSoup
+
+url = "https://www.transfermarkt.co.uk/spieler-statistik/wertvollstespieler/marktwertetop"
+heads = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
+response = requests.get(url, headers=heads)
+html_icerigi = response.text
+soup = BeautifulSoup(html_icerigi, "html.parser")
+footballers = soup.find_all("a",{"class":"spielprofil_tooltip"})
+values=soup.find_all("td",{"class":"rechts hauptlink"})
+nationality=soup.find_all("")
+footballer_list = []
+i=1
+for footballer,value in zip(footballers,values):
+    footballer_list.append(["{}: ".format(i) + footballer.text.strip()+"-->"+value.text.strip()])
+    i+=1
+print(footballer_list)
+
+with open('most_value.csv', 'w') as f:
+    writer = csv.writer(f)
+    for row in footballer_list:
+        writer.writerow(row)
